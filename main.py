@@ -33,7 +33,7 @@ def get_instructions():
     }
     for genre_era in VOTES:
         genre, era = genre_era.split('-')
-        instructions[genre_era] = f'http://localhost:8000/vote/{genre}/{era}'
+        instructions[genre_era] = f'/vote/{genre}/{era}'
     return instructions
 
 def reset_votes():
