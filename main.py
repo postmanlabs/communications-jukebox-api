@@ -1,7 +1,11 @@
 from fastapi import FastAPI, WebSocket
+import uvicorn
 import asyncio
 import os
+import redis
+import json
 
+r = redis.from_url(os.environ.get("REDIS_URL"))
 
 app = FastAPI()
 
@@ -31,10 +35,13 @@ def get_instructions():
     instructions = {
         "instructions": "use the links below to vote for your favorite genre/era of music"
     }
-    for genre_era in VOTES:
+
+    votes = json.loads(r.get('votes'))
+    for genre_era in votes:
         genre, era = genre_era.split('-')
         instructions[genre_era] = f'/vote/{genre}/{era}'
     return instructions
+
 
 def reset_votes():
     votes = {}
@@ -47,10 +54,8 @@ def reset_votes():
             for era in eras:
                 era = era.split('era-')[-1]
                 votes[f'{genre}-{era}'] = 0
+    r.set('votes', json.dumps(votes))
     return votes
-
-
-VOTES = reset_votes()
 
 
 @app.get("/")
@@ -63,39 +68,44 @@ async def root():
 async def say_hello(genre: str, era: str):
     genre = genre.lower()
     era = era.lower()
+    votes = json.loads(r.get('votes'))
     try:
-        VOTES[f'{genre}-{era}'] += 1
+        votes[f'{genre}-{era}'] += 1
+        r.set('votes', json.dumps(votes))
 
         return {
-            f'{genre}-{era}': VOTES[f'{genre}-{era}']
+            f'{genre}-{era}': votes[f'{genre}-{era}']
         }
     except KeyError:
         return get_instructions()
 
+
 @app.get("/results")
 async def get_vote_results():
-    return VOTES
+    votes = json.loads(r.get('votes'))
+    return votes
 
 
 @app.get("/reset")
 async def reset_results():
-    global VOTES
-    VOTES = reset_votes()
-    return VOTES
+    return reset_votes()
 
 
 @app.get("/current-winner")
 async def get_current_winner():
     winner = 'radio'
-    if sum(list(VOTES.values())) > 0:
-        votes = dict(sorted(VOTES.items(), key=lambda item: item[1], reverse=True))
-        first_genre, first_era = list(votes.keys())[0].split('-')
+    votes = json.loads(r.get('votes'))
+    if sum(list(votes.values())) > 0:
+        tmp_votes = dict(sorted(votes.items(), key=lambda item: item[1], reverse=True))
+        first_genre, first_era = list(tmp_votes.keys())[0].split('-')
         winner = f'{first_genre}-{first_era}'
     return {'winner': winner}
 
 
 @app.get('/override-the-vote')
 async def overload_the_vote():
-    VOTES['.extra-1980'] = 10000000
+    votes = json.loads(r.get('votes'))
+    votes['.extra-1980'] = 10000000
+    r.set('votes', json.dumps(votes))
     return {}
 
