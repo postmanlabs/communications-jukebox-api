@@ -15,8 +15,6 @@ class MusicSetup(BaseModel):
     genres: list
 
 
-music = None
-
 '''
 setup/prep work
 
@@ -52,15 +50,19 @@ def get_instructions():
 
 
 def api_init(music_input: MusicSetup):
-    return reset_votes(music_input)
+    r.set("eras", json.dumps(music_input.eras))
+    r.set("genres", json.dumps(music_input.genres))
+    return reset_votes()
 
 
-def reset_votes(music_input):
+def reset_votes():
     votes = {}
-    if len(music_input.eras) and len(music_input.genres):
-        for genre in music_input.genres:
+    eras = json.loads(r.get("eras"))
+    genres = json.loads(r.get("genres"))
+    if len(eras) and len(genres):
+        for genre in genres:
             if '.extra' in genre: continue
-            for era in music_input.eras:
+            for era in eras:
                 votes[f'{genre}-{era}'] = 0
     r.set('votes', json.dumps(votes))
     return votes
@@ -96,13 +98,11 @@ async def get_vote_results():
 
 @app.get("/reset")
 async def reset_results():
-    return reset_votes(music)
+    return reset_votes()
 
 
 @app.post("/init")
 async def reset_results(music_input: MusicSetup):
-    global music
-    music = music_input
     return api_init(music_input)
 
 
