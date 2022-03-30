@@ -113,7 +113,10 @@ async def get_current_winner():
     if sum(list(votes.values())) > 0:
         tmp_votes = dict(sorted(votes.items(), key=lambda item: item[1], reverse=True))
         first_genre, first_era = list(tmp_votes.keys())[0].split('-')
-        winner = f'{first_genre}-{first_era}'
+        if first_era and first_genre:
+            winner = f'{first_genre}-{first_era}'
+        else:
+            winner = first_genre
     return {'winner': winner}
 
 
