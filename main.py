@@ -16,24 +16,9 @@ class MusicSetup(BaseModel):
 
 
 '''
-setup/prep work
-
-# create your folder structure
-# don't let your genre have a dash in the name, eg "hip-hop" should just be "hiphop"
-$ mkdir songs
-$ cd songs
-$ mkdir genre-rock genre-pop
-$ for i in genre*; do mkdir $i/era-1980 $i/era-1990 $i/era-2000 $i/era-2010; done
-
-# place the "song.mp3" files in their appropriate folders
-
-# this will split each song into 3-second segments
-$ find . -name "song.mp3" -exec ffmpeg -i "{}" -f segment -segment_time 3 -c copy "{}-%03d.mp3" \;
-
 todo:
 - build a "poll" at infobip
 - alter vote endpoint to get poll results from infobip
-
 '''
 
 
