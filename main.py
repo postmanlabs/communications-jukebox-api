@@ -120,6 +120,6 @@ async def get_current_winner():
 @app.get('/override-the-vote')
 async def overload_the_vote():
     votes = json.loads(r.get('votes'))
-    votes['.extra-1980'] = 10000000
+    votes['.extra'] = 10000000
     r.set('votes', json.dumps(votes))
     return {}
