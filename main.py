@@ -112,11 +112,11 @@ async def get_current_winner():
     votes = json.loads(r.get('votes'))
     if sum(list(votes.values())) > 0:
         tmp_votes = dict(sorted(votes.items(), key=lambda item: item[1], reverse=True))
-        first_genre, first_era = list(tmp_votes.keys())[0].split('-')
-        if first_era and first_genre:
+        try:
+            first_genre, first_era = list(tmp_votes.keys())[0].split('-')
             winner = f'{first_genre}-{first_era}'
-        else:
-            winner = first_genre
+        except ValueError:
+            winner = list(tmp_votes.keys())[0]
     return {'winner': winner}
 
 
