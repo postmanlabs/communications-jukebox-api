@@ -4,11 +4,18 @@ import asyncio
 import os
 import redis
 import json
+from pydantic import BaseModel
 
 r = redis.from_url(os.environ.get("REDIS_URL"))
-
 app = FastAPI()
 
+
+class MusicSetup(BaseModel):
+    eras: list
+    genres: list
+
+
+music = None
 
 '''
 setup/prep work
@@ -28,8 +35,9 @@ $ find . -name "song.mp3" -exec ffmpeg -i "{}" -f segment -segment_time 3 -c cop
 todo:
 - build a "poll" at infobip
 - alter vote endpoint to get poll results from infobip
- 
+
 '''
+
 
 def get_instructions():
     instructions = {
@@ -43,16 +51,16 @@ def get_instructions():
     return instructions
 
 
-def reset_votes():
+def api_init(music_input: MusicSetup):
+    return reset_votes(music_input)
+
+
+def reset_votes(music_input):
     votes = {}
-    song_path = './songs/'
-    dirs = [os.path.join(song_path, o) for o in os.listdir(song_path) if os.path.isdir(os.path.join(song_path, o))]
-    for orig_dir in dirs:
-        if 'genre' in orig_dir:
-            genre = orig_dir.split('genre-')[-1]
-            eras = dirs = [os.path.join(orig_dir, o) for o in os.listdir(orig_dir) if os.path.isdir(os.path.join(orig_dir, o))]
-            for era in eras:
-                era = era.split('era-')[-1]
+    if len(music_input.eras) and len(music_input.genres):
+        for genre in music_input.genres:
+            if '.extra' in genre: continue
+            for era in music_input.eras:
                 votes[f'{genre}-{era}'] = 0
     r.set('votes', json.dumps(votes))
     return votes
@@ -88,7 +96,14 @@ async def get_vote_results():
 
 @app.get("/reset")
 async def reset_results():
-    return reset_votes()
+    return reset_votes(music)
+
+
+@app.post("/init")
+async def reset_results(music_input: MusicSetup):
+    global music
+    music = music_input
+    return api_init(music_input)
 
 
 @app.get("/current-winner")
@@ -108,4 +123,3 @@ async def overload_the_vote():
     votes['.extra-1980'] = 10000000
     r.set('votes', json.dumps(votes))
     return {}
-
