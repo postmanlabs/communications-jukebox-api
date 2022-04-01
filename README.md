@@ -33,35 +33,6 @@ A `Procfile` is included for deploying to Heroku, though you will need to manual
 
 ## API Endpoints
 
-### POST /init
+You can view our published documentation [at this link](https://documenter.getpostman.com/view/19408657/UVysvuuw) and run the collection within Postman using the following link:
 
-Body:
-```json
-{
-    "eras": [1980,1990,2000,2010],
-    "genres": ["pop", "rock"]
-}
-```
-
-This will initialize the API with "pop" and "rock" genres, and eras spanning the 1980-2010 decades. These values should come from the jukebox-player application automatically when it starts up, based on its local song structure.
-
-### GET /
-
-This will retrieve instructions for voting, along with URI paths of available genres and eras to vote.
-
-### GET /reset
-
-In case something goes a little sideways at an event, you can reset voting to 0 values by hitting this endpoint, which should tell the jukebox-player to resume the 'radio tuning' sound effect.
-
-### GET /current-winner
-
-This will retrieve the current winning vote. In case of a tie, the winner will be the lowest-alphabetical and oldest era. For example, "blues" would win over "waltz" because 'b' comes before 'w' in the alphabet, and 'pop 1980' would win over 'pop 2010' because 1980 is an older era.
-
-### GET /results
-
-Retrieves a full results list of all votes so far
-
-### GET /vote/{genre}/{era}
-
-By sending a specific genre and era in the URL path as string values, you can cast a single vote for that combination of genre and era. The returned payload will show you the current vote tally for that combination since the last reset.
-
+[Run In Postman](https://elements.getpostman.com/view/import?collection=19408657-08f70aa3-ed8d-4385-acc8-dc2905eda5b8-UVysvuuw)
