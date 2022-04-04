@@ -1,10 +1,12 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, Header
 import uvicorn
 import asyncio
 import os
 import redis
 import json
 from pydantic import BaseModel
+
+auth_token = os.environ.get("POSTMAN_AUTH")
 
 r = redis.from_url(os.environ.get("REDIS_URL"))
 app = FastAPI()
@@ -81,14 +83,18 @@ async def get_vote_results():
     return votes
 
 
-@app.get("/reset")
-async def reset_results():
-    return reset_votes()
+@app.post("/reset")
+async def reset_results(postman_auth: str = Header(None)):
+    if postman_auth == auth_token:
+        return reset_votes()
+    return {'message': 'auth token not valid'}
 
 
 @app.post("/init")
-async def reset_results(music_input: MusicSetup):
-    return api_init(music_input)
+async def reset_results(music_input: MusicSetup, postman_auth: str = Header(None)):
+    if postman_auth == auth_token:
+        return api_init(music_input)
+    return {'message': 'auth token not valid'}
 
 
 @app.get("/current-winner")
