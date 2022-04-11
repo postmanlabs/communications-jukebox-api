@@ -61,7 +61,7 @@ async def root():
     return data
 
 
-@app.get("/vote/{genre}/{era}")
+@app.patch("/vote/{genre}/{era}")
 async def say_hello(genre: str, era: str):
     genre = genre.lower()
     era = era.lower()
