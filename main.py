@@ -30,9 +30,12 @@ def get_instructions():
     }
 
     votes = json.loads(r.get('votes'))
-    for genre_era in votes:
-        genre, era = genre_era.split('-')
-        instructions[genre_era] = f'/vote/{genre}/{era}'
+    if '.extra' in votes:
+        instructions['message'] = 'voting has ended for now'
+    else:
+        for genre_era in votes:
+            genre, era = genre_era.split('-')
+            instructions[genre_era] = f'/vote/{genre}/{era}'
     return instructions
 
 
