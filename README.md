@@ -17,6 +17,9 @@ $ pip3 install -r requirements.txt
 # set your redis hostname in a shell environment
 $ export REDIS_URL=redis://localhost:6379
 
+# set your shared Postman authentication value in a shell environment
+$ export POSTMAN_AUTH="shared api key"
+
 # then run the API locally:
 $ python3 -m uvicorn main:app
 
@@ -24,12 +27,13 @@ $ python3 -m uvicorn main:app
 $ POSTMAN_AUTH="shared api key" REDIS_URL=redis://localhost:6379 python3 -m uvicorn main:app
 ```
 
-If you want to watch changes and reload automatically you can add a `--reload` flag to the last python3 command after the `main:app` portion. If you need/want to bind to an alternate IP address, you can use `--host=1.2.3.4` to specify an IPv4 address.
+If you want to watch changes and reload automatically, you can add a `--reload` flag to the last python3 command after the `main:app` portion. If you need/want to bind to an alternate IP address, you can use `--host=1.2.3.4` to specify an IPv4 address.
 
 
 ## Deployment
 
-A `Procfile` is included for deploying to Heroku, though you will need to manually set Redis as an add-on yourself if you wish to deploy this yourself.
+A `Procfile` is included for deploying to Heroku, though you will need to manually set Redis as an add-on yourself if you wish to deploy this yourself. You will also need to manually set the POSTMAN_AUTH environment variable in your hosting environment as well.
+
 
 ## API Endpoints
 
