@@ -21,7 +21,7 @@ $ export REDIS_URL=redis://localhost:6379
 $ python3 -m uvicorn main:app
 
 # if you don't want to export the shell environment setting, you can launch the app this way:
-$ REDIS_URL=redis://localhost:6379 python3 -m uvicorn main:app
+$ POSTMAN_AUTH="shared api key" REDIS_URL=redis://localhost:6379 python3 -m uvicorn main:app
 ```
 
 If you want to watch changes and reload automatically you can add a `--reload` flag to the last python3 command after the `main:app` portion. If you need/want to bind to an alternate IP address, you can use `--host=1.2.3.4` to specify an IPv4 address.
